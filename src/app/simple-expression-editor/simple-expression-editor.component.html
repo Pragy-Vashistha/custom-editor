@@ -1,13 +1,15 @@
 <div class="simple-expression-editor">
-  <!-- Main expression textarea with HTML content -->
+  <!-- Main expression editor -->
   <div class="expression-input">
-    <textarea
-      [value]="highlightedExpression"
-      (focus)="onTextAreaFocus($event)"
-      (input)="onTextAreaInput($event)"
-      placeholder="Enter your expression here..."
-      rows="4">
-    </textarea>
+    <div
+      #editor
+      class="editable-div"
+      contenteditable="true"
+      (input)="onContentChange($event)"
+      (focus)="onEditorFocus($event)"
+      [innerHTML]="highlightedExpression"
+      placeholder="Enter your expression here...">
+    </div>
   </div>
 
   <!-- Raw View -->

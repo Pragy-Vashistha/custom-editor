@@ -6,23 +6,35 @@
   .expression-input {
     margin-bottom: 20px;
 
-    textarea {
+    .editable-div {
       width: 100%;
+      min-height: 100px;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 4px;
       font-family: monospace;
       font-size: 14px;
-      resize: vertical;
-      min-height: 100px;
-      white-space: pre;
-      overflow-wrap: normal;
-      overflow-x: auto;
+      background-color: white;
+      overflow-y: auto;
 
       &:focus {
         outline: none;
         border-color: #007bff;
         box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+      }
+
+      &:empty:before {
+        content: attr(placeholder);
+        color: #999;
+      }
+
+      .highlighted-property {
+        background-color: #e7ffe7;
+        border: 1px solid #4CAF50;
+        border-radius: 3px;
+        padding: 0 4px;
+        margin: 0 2px;
+        display: inline-block;
       }
     }
   }
