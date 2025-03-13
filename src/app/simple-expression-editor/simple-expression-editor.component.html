@@ -1,0 +1,49 @@
+<div class="simple-expression-editor">
+  <!-- Main expression textarea with HTML content -->
+  <div class="expression-input">
+    <textarea
+      [value]="highlightedExpression"
+      (focus)="onTextAreaFocus($event)"
+      (input)="onTextAreaInput($event)"
+      placeholder="Enter your expression here..."
+      rows="4">
+    </textarea>
+  </div>
+
+  <!-- Raw View -->
+  <div class="raw-view">
+    <h4>Raw Expression:</h4>
+    <pre>{{expression}}</pre>
+  </div>
+
+  <!-- Property selector -->
+  <div class="property-selector">
+    <select (change)="onPropertySelect($event)">
+      <option value="">Select a property...</option>
+      <option *ngFor="let prop of properties" [value]="prop">{{prop}}</option>
+    </select>
+  </div>
+
+  <!-- Operator toolbar -->
+  <div class="operator-toolbar">
+    <div class="toolbar-section">
+      <span class="section-label">Operators:</span>
+      <button 
+        *ngFor="let op of operators" 
+        (click)="insertOperator(op)"
+        class="operator-btn">
+        {{op}}
+      </button>
+    </div>
+
+    <div class="toolbar-section">
+      <span class="section-label">Functions:</span>
+      <button 
+        *ngFor="let func of functions" 
+        (click)="insertFunction(func)"
+        class="function-btn">
+        {{func}}
+      </button>
+    </div>
+  </div>
+</div> 

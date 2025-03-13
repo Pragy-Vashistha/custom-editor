@@ -175,11 +175,52 @@
       margin-block: 1.5rem;
     }
   }
+
+  .nav-menu {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 10px;
+  }
+
+  .nav-link {
+    padding: 8px 16px;
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s ease;
+  }
+
+  .nav-link:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+  }
+
+  .nav-link.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
 </style>
 
 <div class="container">
   <h1>{{ title }}</h1>
-  <app-expression-editor></app-expression-editor>
+  
+  <!-- Navigation Menu -->
+  <nav class="nav-menu">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+      Original Editor
+    </a>
+    <a routerLink="/simple" routerLinkActive="active" class="nav-link">
+      Simple Editor
+    </a>
+  </nav>
+
+  <!-- Router Outlet -->
+  <router-outlet></router-outlet>
 </div>
 
 
