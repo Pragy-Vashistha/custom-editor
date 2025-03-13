@@ -1,0 +1,38 @@
+.form-editor {
+  width: 400px;
+  margin: 1em auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.editable-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.editable-div {
+  min-height: 120px;
+  border: 1px solid rgba(0,0,0,0.38);
+  border-radius: 4px;
+  padding: 8px;
+  outline: none;  
+  font-size: 16px;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+}
+
+.property-highlight {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+  border-radius: 3px;
+  padding: 2px 4px;
+}
+
+.submission-result {
+  white-space: pre-wrap;
+  background: #f3f3f3;
+  border: 1px solid #ccc;
+  padding: 8px;
+}

@@ -1,1 +1,63 @@
 /* You can add global styles to this file, and also import other style files */
+.form-editor {
+    width: 400px;
+    margin: 1em auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  .editable-container {
+    width: 100%;
+    position: relative;
+    margin-top: 16px;
+  }
+  
+  label {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 12px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    display: block;
+  }
+  
+  .editable-div {
+    min-height: 120px;
+    outline: none;
+    border: 1px solid rgba(0, 0, 0, 0.38);
+    border-radius: 4px;
+    background-color: transparent;
+    padding: 16px;
+    display: block;
+    overflow-wrap: break-word;
+    font-size: 16px;
+    line-height: 1.5;
+    transition: border-color 0.2s;
+  
+    &:focus {
+      border-color: #673ab7;
+      border-width: 2px;
+    }
+  }
+  
+  /* Make the property highlight more visible */
+  .property-highlight {
+    background-color: #ffd700; /* Bright gold background */
+    color: #000000;           /* Black text for contrast */
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #ffa000; /* Orange border */
+    margin: 0 2px;
+    display: inline-block;
+  }
+  
+  .submission-result {
+    white-space: pre-wrap;
+    background: #f3f3f3;
+    border: 1px solid #ccc;
+    padding: 8px;
+  }

@@ -1,0 +1,39 @@
+<!-- 
+  A minimal example form with Angular Material:
+  1) A property <mat-select>
+  2) A contenteditable div to type or insert highlighted properties
+  3) A submit button
+-->
+
+<form #myForm="ngForm" class="form-editor" (ngSubmit)="onSubmit(myForm)">
+
+  <!-- Property Selection -->
+  <mat-form-field appearance="outline">
+    <mat-label>Select a Property</mat-label>
+    <mat-select name="propSelector" [(ngModel)]="selectedProperty"
+                (selectionChange)="onPropertySelect($event.value)">
+      <mat-option *ngFor="let prop of properties" [value]="prop">
+        {{ prop }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Editable Div Container -->
+  <div class="editable-container">
+    <label>Expression (Content Editable)</label>
+    <div
+      class="editable-div"
+      contenteditable="true"
+      [innerHTML]="editorContent"
+      (input)="onEditableInput($event)">
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <button mat-raised-button color="primary" type="submit">
+    Submit
+  </button>
+</form>
+
+<!-- Optional display of the submission result -->
+<pre class="submission-result">{{submittedData}}</pre> 
