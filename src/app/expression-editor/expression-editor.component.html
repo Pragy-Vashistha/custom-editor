@@ -1,0 +1,81 @@
+<div class="editor-container">
+  <!-- Property Dropdown -->
+  <label for="propertySelect">Add Property:</label>
+  <select 
+    id="propertySelect" 
+    [(ngModel)]="selectedProperty"
+    (ngModelChange)="addProperty()"
+  >
+    <option [ngValue]="null" disabled selected>--Select--</option>
+    <option *ngFor="let prop of properties" [value]="prop">{{ prop }}</option>
+  </select>
+
+  <hr />
+
+  <!-- Operator Toolbar -->
+  <div class="toolbar">
+    <span class="toolbar-title">Operators:</span>
+    <button
+      *ngFor="let op of operators"
+      (click)="addOperator(op)"
+    >
+      {{ op }}
+    </button>
+  </div>
+
+  <!-- Function Toolbar -->
+  <div class="toolbar">
+    <span class="toolbar-title">Functions:</span>
+    <button
+      *ngFor="let func of functions"
+      (click)="addFunction(func)"
+    >
+      {{ func }}
+    </button>
+  </div>
+
+  <hr />
+
+  <!-- Main Expression Editor (contenteditable) -->
+  <div
+    #editor
+    class="expression-editor"
+    contenteditable="true"
+    (input)="updateRawExpression()"
+  >
+    <!-- user can type here, tokens are inserted programmatically -->
+  </div>
+
+  <!-- Token Status Window -->
+  <div class="token-status">
+    <div class="status-row">
+      <span class="status-label">Selected:</span>
+      <span class="status-value">{{ selectedTokens.size }}</span>
+    </div>
+    <div class="status-row">
+      <span class="status-label">Total Tokens:</span>
+      <span class="status-value">{{ totalTokens }}</span>
+    </div>
+    <div class="selected-tokens" *ngIf="selectedTokens.size > 0">
+      <div class="selected-token-list">
+        <span *ngFor="let token of getSelectedTokensInfo()" 
+              [class]="'token-type-' + token.type">
+          {{ token.value }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- Raw Expression Preview -->
+  <div>
+    <label>Raw Expression:</label>
+    <textarea
+      rows="3"
+      cols="50"
+      [value]="getRawExpression()"
+      readonly
+    ></textarea>
+  </div>
+</div> 
