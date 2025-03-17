@@ -1,39 +1,62 @@
 <!-- 
-  A minimal example form with Angular Material:
+  An improved form with Angular Material:
   1) A property <mat-select>
   2) A contenteditable div to type or insert highlighted properties
   3) A submit button
 -->
 
-<form #myForm="ngForm" class="form-editor" (ngSubmit)="onSubmit(myForm)">
+<mat-card class="form-editor-card">
+  <mat-card-header>
+    <mat-card-title>Expression Editor</mat-card-title>
+    <mat-card-subtitle>Select properties and build your expression</mat-card-subtitle>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <form #myForm="ngForm" class="form-editor" (ngSubmit)="onSubmit(myForm)">
+      <!-- Property Selection -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Select a Property</mat-label>
+        <mat-select #propSelector name="propSelector" [(ngModel)]="selectedProperty"
+                    (selectionChange)="onPropertySelect($event.value)"
+                    panelClass="property-select-panel"
+                    disableOptionCentering>
+          <mat-option *ngFor="let prop of properties" [value]="prop">
+            {{ prop }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>Choose a property to insert into your expression</mat-hint>
+      </mat-form-field>
 
-  <!-- Property Selection -->
-  <mat-form-field appearance="outline">
-    <mat-label>Select a Property</mat-label>
-    <mat-select name="propSelector" [(ngModel)]="selectedProperty"
-                (selectionChange)="onPropertySelect($event.value)">
-      <mat-option *ngFor="let prop of properties" [value]="prop">
-        {{ prop }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+      <!-- Editable Div Container -->
+      <div class="editable-container">
+        <label class="mat-label">Expression</label>
+        <div #editableDiv class="editable-div"
+          contenteditable="true"
+          (input)="onEditableInput($event)"
+          (focusout)="onFocusOut($event)">
+        </div>
+        <div class="mat-hint">Type or insert properties to build your expression</div>
+      </div>
 
-  <!-- Editable Div Container -->
-  <div class="editable-container">
-    <label>Expression (Content Editable)</label>
-    <div
-      class="editable-div"
-      contenteditable="true"
-      [innerHTML]="editorContent"
-      (input)="onEditableInput($event)">
-    </div>
-  </div>
+      <!-- Action Buttons -->
+      <div class="button-row">
+        <button mat-stroked-button type="button" (click)="clearEditor()">
+          Clear
+        </button>
+        <button mat-raised-button color="primary" type="submit">
+          Submit
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
 
-  <!-- Submit Button -->
-  <button mat-raised-button color="primary" type="submit">
-    Submit
-  </button>
-</form>
-
-<!-- Optional display of the submission result -->
-<pre class="submission-result">{{submittedData}}</pre> 
+<!-- Display of the submission result -->
+<mat-card *ngIf="submittedData" class="result-card">
+  <mat-card-header>
+    <mat-card-title>Submission Result</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <pre class="submission-result">{{submittedData}}</pre>
+  </mat-card-content>
+</mat-card> 

@@ -24,6 +24,8 @@
     "@angular/router": "^18.2.0",
     "@angular/ssr": "^18.2.2",
     "express": "^4.18.2",
+    "ngx-quill": "^25.3.3",
+    "quill": "^2.0.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.10"
