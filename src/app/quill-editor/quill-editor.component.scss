@@ -28,39 +28,70 @@
   flex: 1;
 }
 
-.insert-button {
-  margin-top: 4px; /* Align with the dropdown */
+/* Custom Toolbar Styling */
+#toolbar {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px 4px 0 0;
+  background: #f8f9fa;
+  margin-bottom: -1px;
+
+  button {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #e9ecef;
+      border-color: #ced4da;
+    }
+
+    &:active {
+      background: #dee2e6;
+    }
+
+    // Function buttons
+    &.ql-function-avg,
+    &.ql-function-sum,
+    &.ql-function-scale {
+      background: #e3f2fd;
+      border-color: #90caf9;
+      color: #1976d2;
+
+      &:hover {
+        background: #bbdefb;
+      }
+    }
+
+    // Operator buttons
+    &.ql-operator-minus,
+    &.ql-operator-plus,
+    &.ql-operator-divide {
+      background: #fff3e0;
+      border-color: #ffcc80;
+      color: #f57c00;
+      font-weight: bold;
+
+      &:hover {
+        background: #ffe0b2;
+      }
+    }
+  }
 }
 
-.full-width {
+.quill-container {
+  display: flex;
+  flex-direction: column;
   width: 100%;
 }
 
-/* Ensure proper dropdown styling */
 :host ::ng-deep {
-  .property-select-panel {
-    min-width: fit-content !important;
-    max-width: 100% !important;
-    width: auto !important;
-  }
-  
-  .mat-mdc-option {
-    font-size: 16px;
-    line-height: 1.5;
-  }
-  
-  .mat-mdc-select-panel {
-    transform-origin: top center !important;
-  }
-
-  /* Quill editor styling */
-  .quill-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin-bottom: 1.25em;
-  }
-
   .ql-container {
     min-height: 120px;
     border-radius: 0 0 4px 4px;
@@ -68,39 +99,19 @@
     font-family: inherit;
   }
 
-  .ql-toolbar {
-    border-radius: 4px 4px 0 0;
+  .ql-editor {
+    p {
+      margin: 0;
+    }
   }
 
-  /* Style for property highlights in Quill */
-  .property-highlight {
-    color: #0d47a1;
-    font-weight: 500;
-    display: inline-block;
-    background-color: #e3f2fd;
-    border-radius: 3px;
+  // Style for highlighted properties
+  .ql-editor span[style*="background: yellow"] {
     padding: 2px 4px;
+    border-radius: 3px;
     margin: 0 2px;
-    cursor: default;
-    user-select: all;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    display: inline-block;
   }
-}
-
-.mat-label {
-  font-size: 12px;
-  font-weight: 400;
-  color: rgba(0, 0, 0, 0.6);
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  margin-bottom: 0.5em;
-}
-
-.mat-hint {
-  font-size: 12px;
-  font-weight: 400;
-  color: rgba(0, 0, 0, 0.6);
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  margin-top: 0.25em;
 }
 
 .button-row {
@@ -110,23 +121,31 @@
   margin-top: 1rem;
 }
 
-.submission-result {
-  white-space: pre-wrap;
-  background: #f5f5f5;
-  border-radius: 4px;
-  padding: 1rem;
-  margin: 0;
-  font-family: 'Roboto Mono', monospace;
-  font-size: 14px;
-  line-height: 1.5;
-  overflow: auto;
-  max-height: 300px;
+.mat-label {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: 0.5em;
 }
 
 .content-preview {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+
+  pre {
+    background: #f5f5f5;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 0;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.87);
+  }
 }
 
 /* Responsive adjustments */
@@ -136,14 +155,17 @@
     max-width: 95%;
     margin: 1rem auto;
   }
-  
+
   .property-selection-row {
     flex-direction: column;
-    gap: 0.5rem;
   }
-  
-  .insert-button {
-    width: 100%;
-    margin-top: 0;
+
+  #toolbar {
+    flex-wrap: wrap;
+    
+    button {
+      flex: 1;
+      min-width: 60px;
+    }
   }
 }

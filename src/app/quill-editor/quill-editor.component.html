@@ -1,46 +1,50 @@
 <mat-card class="quill-editor-card">
   <mat-card-header>
     <mat-card-title>Quill Expression Editor</mat-card-title>
-    <mat-card-subtitle>Select properties and build your expression with Quill</mat-card-subtitle>
+    <mat-card-subtitle>Build expressions with properties and toolbar functions</mat-card-subtitle>
   </mat-card-header>
-  
+
   <mat-card-content>
-    <form #myForm="ngForm" class="quill-editor-form" (ngSubmit)="onSubmit(myForm)">
-      <!-- Property Selection with Insert Button -->
+    <form #myForm="ngForm" class="quill-editor-form" (ngSubmit)="onSubmit()">
+      <!-- Property Selection -->
       <div class="property-selection-row">
         <mat-form-field appearance="outline" class="property-select">
           <mat-label>Select a Property</mat-label>
-          <mat-select #propSelector name="propSelector" [(ngModel)]="selectedProperty"
-                      panelClass="property-select-panel"
-                      disableOptionCentering>
+          <mat-select #propSelector name="propSelector" [(ngModel)]="selectedProperty">
             <mat-option *ngFor="let prop of properties" [value]="prop">
               {{ prop }}
             </mat-option>
           </mat-select>
-          <mat-hint>Choose a property to insert into your expression</mat-hint>
+          <mat-hint>Choose a property to insert</mat-hint>
         </mat-form-field>
-        
-        <button mat-raised-button 
-                color="primary" 
-                type="button" 
-                class="insert-button"
-                [disabled]="!selectedProperty"
-                (click)="insertProperty(selectedProperty); selectedProperty = ''">
-          Insert Property
-        </button>
       </div>
 
-      <!-- Quill Editor -->
+      <!-- Quill Editor Container -->
       <div class="quill-container">
         <label class="mat-label">Expression</label>
+        
+        <!-- Custom Toolbar - Must be outside quill-editor but before it -->
+        <div id="toolbar">
+          <span class="ql-formats">
+            <button class="ql-operator-minus" type="button">-</button>
+            <button class="ql-operator-plus" type="button">+</button>
+            <button class="ql-operator-divide" type="button">/</button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-function-avg" type="button">Avg</button>
+            <button class="ql-function-sum" type="button">Sum</button>
+            <button class="ql-function-scale" type="button">Scale</button>
+          </span>
+        </div>
+
+        <!-- Quill Editor -->
         <quill-editor
           [(ngModel)]="editorContent"
           name="editor"
           [modules]="quillModules"
           (onEditorCreated)="onEditorCreated($event)"
-          placeholder="Type or insert properties to build your expression">
+          placeholder="Build your expression here">
         </quill-editor>
-        <div class="mat-hint">Type or insert properties to build your expression</div>
       </div>
 
       <!-- Action Buttons -->
@@ -64,10 +68,9 @@
   <mat-card-content>
     <div class="content-preview">
       <h3>HTML Content:</h3>
-      <pre class="submission-result">{{editorContent}}</pre>
-      
+      <pre>{{ editorContent }}</pre>
       <h3>Plain Text:</h3>
-      <pre class="submission-result">{{stripHtmlTags(editorContent)}}</pre>
+      <pre>{{ quillEditor?.getText() }}</pre>
     </div>
   </mat-card-content>
 </mat-card>
