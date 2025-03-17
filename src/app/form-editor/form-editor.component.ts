@@ -43,9 +43,12 @@ export class FormEditorComponent implements AfterViewInit {
   
   // Store the property to insert after dropdown closes
   private selectedPropertyToInsert: string | null = null;
-  
-  // Store the cursor position
-  private savedRange: Range | null = null;
+
+  // Store the current selection
+  private savedSelection: { start: number, end: number } | null = null;
+
+  // Allowed characters for input restriction
+  private readonly allowedChars = new Set(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '*', '/', '(', ')', ',', '.', ' ']);
 
   /**
    * Initialize the contenteditable div with the initial content
@@ -58,9 +61,7 @@ export class FormEditorComponent implements AfterViewInit {
     // Subscribe to dropdown open/close events
     this.propSelector.openedChange.subscribe((isOpen: boolean) => {
       if (!isOpen && this.selectedPropertyToInsert) {
-        // Insert the property after dropdown closes
-        const snippet = `<span class="property-highlight" contenteditable="false">${this.selectedPropertyToInsert}</span>`;
-        this.insertAtCursor(snippet);
+        this.insertProperty(this.selectedPropertyToInsert);
         this.selectedPropertyToInsert = null;
       }
     });
@@ -76,73 +77,159 @@ export class FormEditorComponent implements AfterViewInit {
   }
   
   /**
-   * Save the current selection when the div loses focus
+   * Save selection on focus out
    */
-  onFocusOut(event: FocusEvent) {
+  onFocusOut() {
     const selection = window.getSelection();
     if (selection && selection.rangeCount > 0) {
-      this.savedRange = selection.getRangeAt(0).cloneRange();
+      const range = selection.getRangeAt(0);
+      this.savedSelection = {
+        start: range.startOffset,
+        end: range.endOffset
+      };
     }
   }
 
   /**
-   * Insert HTML at the current cursor position
+   * Insert a property with red color
    */
-  private insertAtCursor(html: string) {
+  private insertProperty(property: string) {
     if (!this.editableDiv) return;
-    
-    // Focus the editable div
+
     const el = this.editableDiv.nativeElement;
     el.focus();
-    
-    // Restore the saved selection if available
-    if (this.savedRange) {
-      const selection = window.getSelection();
-      if (selection) {
-        selection.removeAllRanges();
-        selection.addRange(this.savedRange);
-      }
-    }
-    
-    // Get the current selection
+
     const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) return;
-    
-    // Get the current range
+    if (!selection) return;
+
     const range = selection.getRangeAt(0);
+    const span = document.createElement('span');
+    span.style.color = 'red';
+    span.textContent = property;
     
-    // Create a temporary element to hold our HTML
-    const fragment = document.createDocumentFragment();
-    const temp = document.createElement('div');
-    temp.innerHTML = html;
-    
-    // Move the contents of the temporary element to the fragment
-    while (temp.firstChild) {
-      fragment.appendChild(temp.firstChild);
-    }
-    
-    // Delete the current selection content (if any)
     range.deleteContents();
-    
-    // Insert the fragment at the current position
-    range.insertNode(fragment);
-    
-    // Add a space after the inserted property for better usability
-    const spaceNode = document.createTextNode(' ');
-    range.insertNode(spaceNode);
-    
-    // Move the cursor to the end of the inserted content (after the space)
-    range.setStartAfter(spaceNode);
-    range.setEndAfter(spaceNode);
+    range.insertNode(span);
+
+    // Add a space after with black color
+    const space = document.createElement('span');
+    space.style.color = 'black';
+    space.textContent = ' ';
+    range.insertNode(space);
+
+    // Move cursor after the space
+    range.setStartAfter(space);
+    range.setEndAfter(space);
     selection.removeAllRanges();
     selection.addRange(range);
-    
-    // Update our content tracking variable
-    this.editorContent = this.editableDiv.nativeElement.innerHTML;
+
+    this.editorContent = el.innerHTML;
   }
 
   /**
-   * Called whenever content in the editable div changes (user typing, pasting).
+   * Insert an operator
+   */
+  insertOperator(operator: string) {
+    if (!this.editableDiv) return;
+
+    const el = this.editableDiv.nativeElement;
+    el.focus();
+
+    const selection = window.getSelection();
+    if (!selection) return;
+
+    const range = selection.getRangeAt(0);
+    const span = document.createElement('span');
+    span.style.color = 'black';
+    span.textContent = ` ${operator} `;
+    
+    range.deleteContents();
+    range.insertNode(span);
+
+    // Move cursor after the operator
+    range.setStartAfter(span);
+    range.setEndAfter(span);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    this.editorContent = el.innerHTML;
+  }
+
+  /**
+   * Insert a function, handling properties specially
+   */
+  insertFunction(funcName: string) {
+    if (!this.editableDiv) return;
+
+    const el = this.editableDiv.nativeElement;
+    el.focus();
+
+    const selection = window.getSelection();
+    if (!selection) return;
+
+    const range = selection.getRangeAt(0);
+    
+    if (range.toString().trim()) {
+      // We have a selection
+      const fragment = range.cloneContents();
+      const redSpans = fragment.querySelectorAll('span[style*="color: red"]');
+      
+      if (redSpans.length > 0) {
+        // We have properties selected
+        const properties = Array.from(redSpans)
+          .map(span => span.textContent?.trim())
+          .filter(text => text)
+          .join(', ');
+
+        const funcSpan = document.createElement('span');
+        funcSpan.style.color = 'black';
+        funcSpan.textContent = `${funcName}(${properties})`;
+        
+        range.deleteContents();
+        range.insertNode(funcSpan);
+      } else {
+        // Regular text selection
+        const text = range.toString().trim();
+        const funcSpan = document.createElement('span');
+        funcSpan.style.color = 'black';
+        funcSpan.textContent = `${funcName}(${text})`;
+        
+        range.deleteContents();
+        range.insertNode(funcSpan);
+      }
+    } else {
+      // No selection, insert empty function
+      const funcSpan = document.createElement('span');
+      funcSpan.style.color = 'black';
+      funcSpan.textContent = `${funcName}()`;
+      
+      range.insertNode(funcSpan);
+    }
+
+    // Move cursor after the function
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    this.editorContent = el.innerHTML;
+  }
+
+  /**
+   * Handle keydown events to restrict input
+   */
+  onKeyDown(event: KeyboardEvent) {
+    // Allow navigation keys
+    if (event.key.length > 1 || event.ctrlKey || event.metaKey) {
+      return;
+    }
+
+    // Check if the pressed key is allowed
+    if (!this.allowedChars.has(event.key)) {
+      event.preventDefault();
+    }
+  }
+
+  /**
+   * Called whenever content in the editable div changes
    */
   onEditableInput(event: Event) {
     const target = event.target as HTMLDivElement;
@@ -150,21 +237,20 @@ export class FormEditorComponent implements AfterViewInit {
   }
 
   /**
-   * Submit handler for our <form>.
+   * Submit handler
    */
   onSubmit(form: NgForm) {
     const plainText = this.stripHtmlTags(this.editorContent);
     
     this.submittedData =
       'Plain Text: ' + plainText + '\n' +
-      'Full HTML: ' + this.editorContent + '\n' +
-      'Selected Property: ' + this.selectedProperty;
+      'Full HTML: ' + this.editorContent;
 
     console.log('Form submitted!', this.submittedData);
   }
 
   /**
-   * Clears the editor content
+   * Clear the editor
    */
   clearEditor() {
     this.editorContent = '';
@@ -176,7 +262,7 @@ export class FormEditorComponent implements AfterViewInit {
   }
 
   /**
-   * Utility: strip HTML tags to get raw text
+   * Strip HTML tags to get plain text
    */
   private stripHtmlTags(html: string): string {
     const temp = document.createElement('div');

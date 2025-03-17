@@ -27,13 +27,31 @@
         <mat-hint>Choose a property to insert into your expression</mat-hint>
       </mat-form-field>
 
+      <!-- Operator and Function Toolbar -->
+      <div class="toolbar">
+        <div class="toolbar-section">
+          <span class="toolbar-label">Operators:</span>
+          <button mat-stroked-button type="button" (click)="insertOperator('+')" class="toolbar-button">+</button>
+          <button mat-stroked-button type="button" (click)="insertOperator('-')" class="toolbar-button">-</button>
+          <button mat-stroked-button type="button" (click)="insertOperator('*')" class="toolbar-button">×</button>
+          <button mat-stroked-button type="button" (click)="insertOperator('/')" class="toolbar-button">÷</button>
+        </div>
+        <div class="toolbar-section">
+          <span class="toolbar-label">Functions:</span>
+          <button mat-stroked-button type="button" (click)="insertFunction('Avg')" class="toolbar-button">Avg()</button>
+          <button mat-stroked-button type="button" (click)="insertFunction('Sum')" class="toolbar-button">Sum()</button>
+          <button mat-stroked-button type="button" (click)="insertFunction('Scale')" class="toolbar-button">Scale()</button>
+        </div>
+      </div>
+
       <!-- Editable Div Container -->
       <div class="editable-container">
         <label class="mat-label">Expression</label>
         <div #editableDiv class="editable-div"
           contenteditable="true"
           (input)="onEditableInput($event)"
-          (focusout)="onFocusOut($event)">
+          (focusout)="onFocusOut()"
+          (keydown)="onKeyDown($event)">
         </div>
         <div class="mat-hint">Type or insert properties to build your expression</div>
       </div>
