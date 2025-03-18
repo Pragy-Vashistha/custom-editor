@@ -20,28 +20,19 @@ import { QuillModule } from 'ngx-quill';
     QuillModule
   ],
   templateUrl: './quill-editor.component.html',
-  styleUrl: './quill-editor.component.scss'
+  styleUrls: ['./quill-editor.component.scss']
 })
 export class QuillEditorComponent implements AfterViewInit {
-  // Sample list of properties
   properties: string[] = ['speed', 'temperature', 'pressure'];
-
-  // For ngModel binding with Quill editor
   editorContent: string = '';
-
-  // For ngModel binding with dropdown
   selectedProperty: string = '';
-
-  // Quill editor instance
   quillEditor: any;
 
-  // Reference to the property selector
   @ViewChild('propSelector') propSelector!: MatSelect;
 
-  // Quill editor configuration with custom toolbar and keyboard bindings
   quillModules = {
     toolbar: {
-      container: '#toolbar',  // Point to the toolbar container
+      container: '#toolbar',
       handlers: {
         'operator-minus': () => this.insertOperator('-'),
         'operator-plus': () => this.insertOperator('+'),
@@ -51,15 +42,22 @@ export class QuillEditorComponent implements AfterViewInit {
         'function-scale': () => this.insertFunction('Scale')
       }
     },
+    // readOnly: false, // Set as needed
+
+    // Optional: You can still try Quill's keyboard bindings here,
+    // but the 'text-change' listener below is the bulletproof method.
     keyboard: {
       bindings: {
-        'restrict-input': {
+        // Example partial: block a few keys inline.
+        // This alone can be bypassed, so we *also* do text-change cleanup.
+        'alpha': {
           key: null,
           handler: (range: any, context: any) => {
             const key = context.event.key;
-            if (/[a-zA-Z]/.test(key)) return false;
-            if (/[0-9]/.test(key) || ['-', '+', '/'].includes(key)) return true;
-            return false;
+            if (/[a-zA-Z]/.test(key)) {
+              return false; // Block letters at the keyboard level
+            }
+            return true;    // Allow everything else
           }
         }
       }
@@ -79,90 +77,103 @@ export class QuillEditorComponent implements AfterViewInit {
     }, 0);
   }
 
-  /** Called when the Quill editor is created */
   onEditorCreated(editor: any) {
     this.quillEditor = editor;
+
+    // -------------------------------------------
+    // TEXT-CHANGE LISTENER: strip alphabets
+    // -------------------------------------------
+    this.quillEditor.on('text-change', (delta: any, oldDelta: any, source: string) => {
+      if (source === 'user') {
+        // 1) Get the current text
+        const currentText = this.quillEditor.getText();
+
+        // 2) Remove alphabets [a-z, A-Z]
+        const sanitized = currentText.replace(/[a-zA-Z]+/g, '');
+
+        // 3) If something changed, update the editor content
+        if (sanitized !== currentText) {
+          // Save current cursor position
+          const selection = this.quillEditor.getSelection();
+
+          // Replace *entire* text in Quill
+          this.quillEditor.setText(sanitized);
+
+          // Attempt to restore the cursor, adjusting if needed
+          if (selection) {
+            let newIndex = selection.index;
+            if (newIndex > sanitized.length) {
+              newIndex = sanitized.length;
+            }
+            this.quillEditor.setSelection(newIndex, 0);
+          }
+        }
+      }
+    });
   }
 
-  /** Insert a property with highlighting and proper cursor placement */
   insertProperty(property: string) {
     if (!this.quillEditor) return;
-
     const range = this.quillEditor.getSelection(true);
     const index = range ? range.index : this.quillEditor.getLength();
 
-    this.quillEditor.insertText(index, property, 'color', 'red');
-    const range1 = this.quillEditor.getSelection();
-    const index1 = range1 ? range1.index : this.quillEditor.getLength();
-    this.quillEditor.insertText(index1, ' ', 'color', 'black');
+    // Insert property in red
+    this.quillEditor.insertText(index, property, { color: 'red' });
+    // Insert space in black
+    this.quillEditor.insertText(index + property.length, ' ', { color: 'black' });
+    // Move cursor
+    this.quillEditor.setSelection(index + property.length + 1);
   }
 
-  /** Insert an operator at the cursor position */
   insertOperator(operator: string) {
     if (!this.quillEditor) return;
-
     const range = this.quillEditor.getSelection(true);
     const index = range ? range.index : this.quillEditor.getLength();
-
-    this.quillEditor.insertText(index, ` ${operator} `);
+    this.quillEditor.insertText(index, ` ${operator} `, { color: 'black' });
     this.quillEditor.setSelection(index + 3);
   }
 
-  /** Insert a function, wrapping selected text if present */
   insertFunction(func: string) {
     if (!this.quillEditor) return;
-
     const range = this.quillEditor.getSelection(true);
     if (!range) return;
 
     if (range.length > 0) {
       const contents = this.quillEditor.getContents(range.index, range.length);
-      
-      // Filter out only the property ops (red text)
-      const propertyOps = contents.ops?.filter((op: { attributes?: { color: string }, insert?: string }) => 
+      const propertyOps = contents.ops?.filter((op: any) =>
         op.attributes?.color === 'red' && op.insert?.trim()
       );
 
-      // If we have properties, handle them specially
       if (propertyOps && propertyOps.length > 0) {
         this.quillEditor.deleteText(range.index, range.length);
-        
-        // Insert function name and opening parenthesis
+
         let currentIndex = range.index;
-        this.quillEditor.insertText(currentIndex, `${func}(`, 'color', 'black');
+        this.quillEditor.insertText(currentIndex, `${func}(`, { color: 'black' });
         currentIndex += func.length + 1;
 
-        // Insert properties with commas
-        propertyOps.forEach((op: { attributes?: { color: string }, insert?: string }, index: number) => {
-          if (op.insert) {
-            // Insert the property in red
-            this.quillEditor.insertText(currentIndex, op.insert.trim(), 'color', 'red');
-            currentIndex += op.insert.trim().length;
-
-            // Add comma and space if it's not the last property
-            if (index < propertyOps.length - 1) {
-              this.quillEditor.insertText(currentIndex, ', ', 'color', 'black');
-              currentIndex += 2;
-            }
+        propertyOps.forEach((op: any, idx: number) => {
+          const text = op.insert.trim();
+          this.quillEditor.insertText(currentIndex, text, { color: 'red' });
+          currentIndex += text.length;
+          if (idx < propertyOps.length - 1) {
+            this.quillEditor.insertText(currentIndex, ', ', { color: 'black' });
+            currentIndex += 2;
           }
         });
 
-        // Close the function
-        this.quillEditor.insertText(currentIndex, ')', 'color', 'black');
+        this.quillEditor.insertText(currentIndex, ')', { color: 'black' });
         this.quillEditor.setSelection(currentIndex + 1);
       } else {
-        // No properties found, just wrap the selection
-        this.quillEditor.insertText(range.index, `${func}()`, 'color', 'black');
+        this.quillEditor.insertText(range.index, `${func}()`, { color: 'black' });
         this.quillEditor.setSelection(range.index + func.length + 1);
       }
     } else {
-      // No selection, insert empty function
-      this.quillEditor.insertText(range.index, `${func}()`, 'color', 'black');
+      // Insert function with empty parentheses
+      this.quillEditor.insertText(range.index, `${func}()`, { color: 'black' });
       this.quillEditor.setSelection(range.index + func.length + 1);
     }
   }
 
-  /** Clear the editor content */
   clearEditor() {
     if (this.quillEditor) {
       this.quillEditor.setText('');
@@ -170,7 +181,6 @@ export class QuillEditorComponent implements AfterViewInit {
     this.selectedProperty = '';
   }
 
-  /** Submit handler */
   onSubmit() {
     if (this.quillEditor) {
       const plainText = this.quillEditor.getText();
