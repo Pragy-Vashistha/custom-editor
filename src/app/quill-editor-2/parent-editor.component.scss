@@ -1,0 +1,29 @@
+::ng-deep {
+  /* Ensure proper sizing of editor */
+  .ql-container {
+    min-height: 150px;
+    border-radius: 0 0 4px 4px;
+    font-size: 16px;
+  }
+  
+  /* Style the editor container */
+  .ql-editor {
+    background-color: #fff;
+    
+    /* Style inserted properties */
+    [data-placeholder] {
+      background-color: #e3f2fd;
+      padding: 2px 4px;
+      border-radius: 3px;
+      color: #1976d2;
+    }
+  }
+}
+
+/* Button row styling */
+.button-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  gap: 0.5rem;
+} 

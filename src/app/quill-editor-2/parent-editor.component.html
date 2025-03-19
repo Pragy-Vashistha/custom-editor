@@ -1,0 +1,4 @@
+<app-custom-toolbar #toolbarCmp [propertyOptions]="propertyOptions" (selectProperty)="insertProperty($event)"></app-custom-toolbar>
+<div quillEditor [customToolbar]="toolbarCmp.toolbarElement" [placeholder]="placeholder"
+     (textChange)="onTextChanged($event)" (selectionChange)="onSelectionChanged($event)">
+</div> 

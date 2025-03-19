@@ -1,6 +1,9 @@
 /* Import pre-built Material themes instead of custom theming */
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
+/* Import Quill styles */
+@import 'quill/dist/quill.snow.css';
+
 /* We'll handle Quill styles in the component itself */
 
 /* Global styles */
@@ -27,4 +30,27 @@ html, body {
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
   cursor: default;
   user-select: all;
+}
+
+/* Style for the minimal quill editor */
+.button-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  gap: 0.5rem;
+}
+
+button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
 }

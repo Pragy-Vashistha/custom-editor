@@ -1,19 +1,22 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ExpressionEditorComponent } from './expression-editor/expression-editor.component';
-import { SimpleExpressionEditorComponent } from './simple-expression-editor/simple-expression-editor.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    RouterModule,
-    ExpressionEditorComponent,
-    SimpleExpressionEditorComponent
-  ],
+  imports: [RouterModule, CommonModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'Expression Editor Demo';
+  title = 'Angular Text Editor Examples';
+  
+  editors = [
+    { path: '/', name: 'Original Editor', description: 'Original expression editor with property insertion' },
+    { path: '/simple', name: 'Simple Editor', description: 'Simplified expression editor' },
+    { path: '/form', name: 'Form Editor', description: 'Form-based expression editor' },
+    { path: '/quill', name: 'Quill Editor', description: 'Rich text editor with Quill.js' },
+    { path: '/quill-minimal', name: 'Minimal Quill', description: 'Minimal Quill editor with property insertion' }
+  ];
 }

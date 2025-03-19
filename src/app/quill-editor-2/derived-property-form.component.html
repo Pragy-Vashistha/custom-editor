@@ -1,0 +1,19 @@
+<div class="derived-form-container">
+  <h2>Minimal Quill Editor with Property Insertion</h2>
+  <p class="description">Use the dropdown to insert dynamic property placeholders.</p>
+  
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <app-parent-editor formControlName="content" [propertyOptions]="propertyOptionsList"></app-parent-editor>
+    <div class="button-row">
+      <button type="submit">Save Content</button>
+    </div>
+  </form>
+  
+  <div *ngIf="formSubmitted" class="result-panel">
+    <h3>Submitted Content</h3>
+    <div class="content-preview">
+      <p><strong>HTML Content:</strong></p>
+      <pre>{{ form.value.content }}</pre>
+    </div>
+  </div>
+</div> 

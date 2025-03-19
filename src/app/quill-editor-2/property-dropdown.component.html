@@ -1,0 +1,4 @@
+<select #propSelect (change)="onSelect(propSelect.value); propSelect.value=''">
+  <option value="" disabled selected>Insert property...</option>
+  <option *ngFor="let prop of propertyOptions" [value]="prop.value">{{ prop.label }}</option>
+</select> 

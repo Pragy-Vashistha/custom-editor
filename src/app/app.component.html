@@ -211,17 +211,15 @@
   
   <!-- Navigation Menu -->
   <nav class="nav-menu">
-    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
-      Original Editor
-    </a>
-    <a routerLink="/simple" routerLinkActive="active" class="nav-link">
-      Simple Editor
-    </a>
-    <a routerLink="/form" routerLinkActive="active" class="nav-link">
-      Form Editor
-    </a>
-    <a routerLink="/quill" routerLinkActive="active" class="nav-link">
-      Quill Editor
+    <a 
+      *ngFor="let editor of editors"
+      [routerLink]="editor.path" 
+      routerLinkActive="active" 
+      [routerLinkActiveOptions]="{exact: editor.path === '/'}" 
+      class="nav-link"
+      [attr.title]="editor.description"
+    >
+      {{ editor.name }}
     </a>
   </nav>
 
